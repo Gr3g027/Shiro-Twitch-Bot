@@ -45,9 +45,19 @@ class Config:
         return self.is_twitch_config_valid() and self.GOSUMEMORY_JSON is not None
 
     def is_twitch_config_valid(self) -> bool:
-        """Checks if the twitch values are valid"""
-        return all(value is not None for value in self.get_twitch_data().values())
+        """Checks if the twitch values are valid""" 
+        for value in self.get_twitch_data().values():
+            if (value == "" or None):
+                return False
+        return True
+
+        # return all(value is not None for value in self.get_twitch_data().values())
 
     def is_mega_config_valid(self) -> bool:
         """Checks if the mega values are valid"""
-        return all(value is not None for value in self.get_mega_data().values())
+        for value in self.get_mega_data().values():
+            if (value == "" or None):
+                return False
+        return True
+
+        # return all(value is not None for value in self.get_mega_data().values())
