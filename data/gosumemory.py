@@ -1,5 +1,5 @@
 """
-Helper module to get data from gosumemory, mega and from the config file
+Helper module to get data from gosumemory, mega and the config file
 """
 
 from os.path import join
@@ -9,15 +9,21 @@ import requests
 from file_sharing.mega_handler import MegaHandler
 
 from outputs.outputs import Outputs
-from utils.utils import zip_skin, tinyurl_shortener, add_element_to_json_file, create_empty_json_file, search_json_file
+from utils.utils import (
+    zip_skin,
+    tinyurl_shortener,
+    add_element_to_json_file,
+    create_empty_json_file,
+    search_json_file,
+)
 from .config import Config
 
 
 class Gosumemory:
-    """Gosumemory class, used to get data from the gosumemory api"""
+    """Gosumemory class, used to get data from the gosumemory api."""
 
     def __init__(self):
-        """Class constructor, loads the config file."""
+        """Gosumemory class constructor, loads the config file."""
         self._config = Config()
         self.gosumemory_url = self._config.get_gosumemory_url()
 
@@ -26,7 +32,6 @@ class Gosumemory:
         Gets data from gosumemory, returns a dictionary
         with every information contained in the gosumemory json.
         """
-
         try:
             # get data from gosumemory
             api_data = requests.get(self.gosumemory_url).json()
@@ -43,7 +48,6 @@ class Gosumemory:
         it is zipped and then uploaded to the mega
         folder specified in the config file.
         """
-
         # getting skin name and skin path from gosumemory
         api_data = self.get_gosumemory_data()
 
@@ -88,8 +92,7 @@ class Gosumemory:
             add_element_to_json_file("skins.json", skin_name, skin_url_short)
             return skin_url_short
 
-        # the skin is not on mega
-
+        # the skin is not on mega, 
         # zipping the skin folder as skin_name.osk
         Outputs.print_info("Zipping your current skin")
         zip_skin(skin_name, skin_folder_path)
@@ -104,7 +107,7 @@ class Gosumemory:
         # removing the local zip file
         remove(f"{skin_name}.osk")
 
-        # shortening
+        # shortening the skin download url
         skin_url_short = tinyurl_shortener(skin_url)
         add_element_to_json_file("skins.json", skin_name, skin_url_short)
 
@@ -113,7 +116,6 @@ class Gosumemory:
 
     def get_skin(self, url_support: bool = True) -> dict:
         """Gets data from gosumemory, returns skin informations."""
-
         api_data = self.get_gosumemory_data()
         if not api_data:
             return None
@@ -129,13 +131,11 @@ class Gosumemory:
 
     def get_map(self) -> dict:
         """Gets data from gosumemory, returns current beatmap informations."""
-
         api_data = self.get_gosumemory_data()
         if not api_data:
             return None
 
-        # creating download link
-
+        # creating map download url
         beatmap_metadata = api_data["menu"]["bm"]["metadata"]
         return {
             "url": f"https://osu.ppy.sh/b/{api_data['menu']['bm']['id']}",

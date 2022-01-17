@@ -4,10 +4,10 @@ from outputs.outputs import Outputs
 
 
 class Setup:
-    """Setup class, used to initiate the setup if config file is missing or invalid"""
+    """Setup class, used to initiate the setup if config file is missing or invalid."""
 
     def __init__(self, filename: str = "config.txt") -> None:
-        """Setup class constructor"""
+        """Setup class constructor."""
         self._filename: str = filename
 
     def set_bot_nick(self) -> str:
@@ -38,7 +38,7 @@ class Setup:
         return input("Insert MEGA FOLDER: ")
 
     def setup_bot(self) -> None:
-        """Setup all the settings, writing them in the config file"""
+        """Setup all the settings, writing them in the config file."""
         with open(self._filename, "w") as f:
             print(
                 "# BOT CONFIG",

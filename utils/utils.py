@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 
 def tinyurl_shortener(full_url: str) -> str:
     """Returns a shortened url for the provided url."""
-
     api = "https://tinyurl.com/api-create.php"
     params = {"url": full_url}
     return get(api, params).text
@@ -21,7 +20,6 @@ def tinyurl_shortener(full_url: str) -> str:
 
 def zip_skin(skin_name: str, skin_folder_path: str) -> dict:
     """Zips the specified skin in a .osk file from the folder defined."""
-
     with ZipFile(f"{skin_name}.osk", "w") as zip_file:
         for root, _, files in os.walk(skin_folder_path):
             for file in files:
@@ -33,7 +31,6 @@ def zip_skin(skin_name: str, skin_folder_path: str) -> dict:
 
 def get_map_infos(url: str):
     """Gets the map info using web scraping."""
-
     # scraping
     webpage = get(url)
     soup = BeautifulSoup(webpage.content, "html.parser")
@@ -85,7 +82,7 @@ def get_map_infos(url: str):
 
 
 def add_element_to_json_file(filename: str, key: str, value, encoding: str = "utf-8"):
-    """add specified key value pair to json file"""
+    """Add specified key value pair to json file."""
     if not os.path.exists(os.path.join(os.path.abspath(os.getcwd()), filename)):
         return
 
@@ -99,7 +96,7 @@ def add_element_to_json_file(filename: str, key: str, value, encoding: str = "ut
 
 
 def create_empty_json_file(filename: str, encoding: str = "utf-8"):
-    """Creates an empty json file in the current working directory"""
+    """Creates an empty json file in the current working directory."""
     if os.path.exists(os.path.join(os.path.abspath(os.getcwd()), filename)):
         return
 
@@ -108,8 +105,7 @@ def create_empty_json_file(filename: str, encoding: str = "utf-8"):
 
 
 def search_json_file(filename: str, key, encoding: str = "utf-8"):
-    """Searches the value for the specified key"""
-
+    """Searches the value for the specified key."""
     if not os.path.exists(os.path.join(os.path.abspath(os.getcwd()), filename)):
         create_empty_json_file(filename)
 

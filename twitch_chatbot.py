@@ -27,4 +27,7 @@ if __name__ == "__main__":
         prefix=twitch_data["BOT_PREFIX"],
         channels=[twitch_data["CHANNEL"]],
     )
+
+    # starting the bot,
+    # the method run() is blocking anything behind will not be executed
     bot.run()
