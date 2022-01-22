@@ -1,14 +1,14 @@
-"""Config helper module"""
+'''Config helper module'''
 
 from os import environ
 from dotenv import load_dotenv
 
 
 class Config:
-    """Config class, used to get and check the config file settings."""
+    '''Config class, used to get and check the config file settings.'''
     
     def __init__(self, filename: str = "config.txt"):
-        """Config class constructor."""
+        '''Config class constructor.'''
         load_dotenv(filename)
 
         self.TMI_TOKEN = environ.get("TMI_TOKEN")
@@ -22,7 +22,7 @@ class Config:
         self.MEGA_FOLDER = environ.get("MEGA_FOLDER")
 
     def get_mega_data(self) -> dict:
-        """Returns mega config data."""
+        '''Returns mega config data.'''
         return {
             "MEGA_EMAIL": self.MEGA_EMAIL,
             "MEGA_PASSWORD": self.MEGA_PASSWORD,
@@ -30,7 +30,7 @@ class Config:
         }
 
     def get_twitch_data(self) -> dict:
-        """Returns twitch config data."""
+        '''Returns twitch config data.'''
         return {
             "TMI_TOKEN": self.TMI_TOKEN,
             "CLIENT_ID": self.CLIENT_ID,
@@ -40,15 +40,15 @@ class Config:
         }
 
     def get_gosumemory_url(self) -> dict:
-        """Returns the gosumemory url."""
+        '''Returns the gosumemory url.'''
         return self.GOSUMEMORY_JSON
 
     def is_config_usable(self) -> bool:
-        """Checks if values are valid."""
+        '''Checks if values are valid.'''
         return self.is_twitch_config_valid() and self.GOSUMEMORY_JSON is not None
 
     def is_twitch_config_valid(self) -> bool:
-        """Checks if the twitch values are valid."""
+        '''Checks if the twitch values are valid.'''
         for value in self.get_twitch_data().values():
             if value == "" or None:
                 return False
@@ -57,7 +57,7 @@ class Config:
         # return all(value is not None for value in self.get_twitch_data().values())
 
     def is_mega_config_valid(self) -> bool:
-        """Checks if the mega values are valid."""
+        '''Checks if the mega values are valid.'''
         for value in self.get_mega_data().values():
             if value == "" or None:
                 return False

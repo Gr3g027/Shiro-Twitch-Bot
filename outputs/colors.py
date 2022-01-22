@@ -1,4 +1,4 @@
-"""Colors package"""
+'''Colors package'''
 
 import colorama
 

@@ -1,6 +1,6 @@
-"""
+'''
 Helper module to get data from gosumemory, mega and the config file
-"""
+'''
 
 from os.path import join
 from os import pardir, remove
@@ -20,18 +20,18 @@ from .config import Config
 
 
 class Gosumemory:
-    """Gosumemory class, used to get data from the gosumemory api."""
+    '''Gosumemory class, used to get data from the gosumemory api.'''
 
     def __init__(self):
-        """Gosumemory class constructor, loads the config file."""
+        '''Gosumemory class constructor, loads the config file.'''
         self._config = Config()
         self.gosumemory_url = self._config.get_gosumemory_url()
 
     def get_gosumemory_data(self) -> dict:
-        """
+        '''
         Gets data from gosumemory, returns a dictionary
         with every information contained in the gosumemory json.
-        """
+        '''
         try:
             # get data from gosumemory
             api_data = requests.get(self.gosumemory_url).json()
@@ -42,12 +42,12 @@ class Gosumemory:
             return None
 
     def get_skin_url(self, skin_name: str, auto_upload: bool = False) -> str:
-        """
+        '''
         Returns the current skin url from mega.
         If skin isn't uploaded into the mega folder,
         it is zipped and then uploaded to the mega
         folder specified in the config file.
-        """
+        '''
         # getting skin name and skin path from gosumemory
         api_data = self.get_gosumemory_data()
 
@@ -115,7 +115,7 @@ class Gosumemory:
         return skin_url_short
 
     def get_skin(self, url_support: bool = True) -> dict:
-        """Gets data from gosumemory, returns skin informations."""
+        '''Gets data from gosumemory, returns skin informations.'''
         api_data = self.get_gosumemory_data()
         if not api_data:
             return None
@@ -130,7 +130,7 @@ class Gosumemory:
         return {"skin": skin_name, "url": skin_url}
 
     def get_map(self) -> dict:
-        """Gets data from gosumemory, returns current beatmap informations."""
+        '''Gets data from gosumemory, returns current beatmap informations.'''
         api_data = self.get_gosumemory_data()
         if not api_data:
             return None

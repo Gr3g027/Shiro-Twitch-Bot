@@ -1,6 +1,6 @@
-"""
+'''
 Main program
-"""
+'''
 import sys
 
 from bot.bot import Bot
@@ -29,5 +29,5 @@ if __name__ == "__main__":
     )
 
     # starting the bot,
-    # the method run() is blocking anything behind will not be executed
+    # the method run() is blocking; anything behind will not be executed
     bot.run()

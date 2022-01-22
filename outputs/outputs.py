@@ -1,38 +1,38 @@
-"""Output handler module"""
+'''Output handler module'''
 from outputs.colors import colors
 
 
 class Outputs:
-    """Outputs class, used to display some text in the terminal."""
+    '''Outputs class, used to display some text in the terminal.'''
 
     @staticmethod
     def print_message(author: str, message: str) -> None:
-        """Prints a chat message to the terminal with colors."""
+        '''Prints a chat message to the terminal with colors.'''
         print(f"{colors['LIGHT_PURPLE']}{author}: {colors['NOCOLOR']}{message}")
 
     @staticmethod
     def print_info(to_be_printed: str) -> None:
-        """Prints a info message to the terminal with colors."""
+        '''Prints a info message to the terminal with colors.'''
         print(f"{colors['CYAN']}{to_be_printed}{colors['NOCOLOR']}")
 
     @staticmethod
     def print_error(error: str) -> None:
-        """prints an error message to the terminal with colors."""
+        '''prints an error message to the terminal with colors.'''
         print(f"{colors['RED']}{error}{colors['NOCOLOR']}")
 
     @staticmethod
     def print_warning(warning: str) -> None:
-        """Prints an error message to the terminal with colors."""
+        '''Prints an error message to the terminal with colors.'''
         print(f"{colors['YELLOW']}{warning}{colors['NOCOLOR']}")
 
     @staticmethod
     def print_map_request(author: str, message: str) -> None:
-        """Prints an osu map request to the terminal with colors."""
+        '''Prints an osu map request to the terminal with colors.'''
         # TODO
 
     @staticmethod
     def string_map(metadata: dict) -> str:
-        """Returns a formatted string for osu maps."""
+        '''Returns a formatted string for osu maps.'''
         # FIXME should not be here
         return (
             f"/me {metadata['artist']} - {metadata['title']} "

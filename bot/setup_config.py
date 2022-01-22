@@ -1,44 +1,54 @@
-"""Setup handler module"""
+'''Setup handler module'''
 
 from outputs.outputs import Outputs
 
-
 class Setup:
-    """Setup class, used to initiate the setup if config file is missing or invalid."""
+    '''Setup class, used to initiate the setup if config file is missing or invalid.'''
 
     def __init__(self, filename: str = "config.txt") -> None:
-        """Setup class constructor."""
+        '''Setup class constructor.'''
         self._filename: str = filename
 
     def set_bot_nick(self) -> str:
-        return input("Insert BOT NICK: ")
+        Outputs.print_info("Nickname of the Twitch account you choose to be the bot")
+        return input(f"Insert BOT NICK: ").lower()
 
     def set_bot_prefix(self) -> str:
+        Outputs.print_info("Prefix wich will be used by the bot to determine commands (e. g. '!')")
         return input("Insert BOT PREFIX: ")
 
     def set_gosu_json_url(self) -> str:
-        return input("Insert GOSUMEMORY JSON URL: ")
+        Outputs.print_info("URL that Gosumemory uses to return the json data (e. g. 'http://127.0.0.1:24050/json')")
+        gosu_url = input("Insert GOSUMEMORY JSON URL: ")
+        return gosu_url;
 
     def set_token(self) -> str:
-        return input("Insert TMI TOKEN: ")
+        Outputs.print_info("URL that Gosumemory uses to return the json data (e. g. 'http://127.0.0.1:24050/json')")
+        tmi_token = input("Insert TMI TOKEN: ")
+        return tmi_token
 
     def set_client_id(self) -> str:
         return input("Insert CLIENT ID: ")
 
     def set_channel(self) -> str:
-        return input("Insert STREAMER CHANNEL: ")
+        Outputs.print_info("Name of the Streamer")
+        return input("Insert STREAMER CHANNEL: ").lower()
 
     def set_mega_email(self) -> str:
-        return input("Insert MEGA EMAIL: ")
+        Outputs.print_info("Your MEGA account's email")
+        mega_email = input("Insert MEGA EMAIL: ")
+        return mega_email
 
     def set_mega_password(self) -> str:
+        Outputs.print_info("Your MEGA account's password")
         return input("Insert MEGA PASSWORD: ")
 
     def set_mega_folder(self) -> str:
+        Outputs.print_info("Your MEGA folder to wich you want to upload skins")
         return input("Insert MEGA FOLDER: ")
 
     def setup_bot(self) -> None:
-        """Setup all the settings, writing them in the config file."""
+        '''Setup all the settings, writing them in the config file.'''
         with open(self._filename, "w") as f:
             print(
                 "# BOT CONFIG",
