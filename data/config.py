@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 
 
 class Config:
-    def __init__(self, filename: str = "config.env"):
-        load_dotenv(filename)
+    def __init__(self):
+        load_dotenv()
 
         #TWITCH settings
         self.TMI_TOKEN = environ.get("TMI_TOKEN")

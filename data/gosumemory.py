@@ -83,7 +83,6 @@ class Gosumemory:
 
         # skin is already on mega
         if skin_file_mega:
-            Outputs.print_info("The skin is already on mega!")
             skin_url_short = tinyurl_shortener(mega.get_link(skin_file_mega))
             add_element_to_json_file("skins.json", skin_name, skin_url_short)
             return skin_url_short

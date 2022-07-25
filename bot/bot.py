@@ -82,6 +82,7 @@ class Bot(commands.Bot):
         '''Skin command'''
         skin = self.gosumemory.get_skin()
         if skin:
+            Outputs.print_info("The skin is already on mega!")
             await ctx.send(f"{skin['skin']} {skin['url']}")
             Outputs.print_info("Skin command executed!")
         else:
