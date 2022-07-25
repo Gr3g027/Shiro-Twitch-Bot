@@ -3,29 +3,28 @@ from twitchio.ext import commands
 from twitchio.ext import routines
 
 # pylint: disable=import-error, no-name-in-module
-from bot.osu_specific import Osu
+from bot.osu_specific import *
 from bot.irc import Irc
 from outputs.outputs import Outputs
 from data.gosumemory import Gosumemory
 from data.config import Config
 
-class Bot(commands.Bot):
+class Bot(commands.Bot, Irc):
     '''Bot class, handles all the bot logic'''
 
-    def __init__(self, access_token='', prefix='', channels=None):
+    def __init__(self, access_token, prefix, channels, osu_irc_server, osu_irc_port, osu_irc_name, osu_irc_pass):
         '''Bot class constructor'''
 
-        self.osu = Osu()
         self.outputs = Outputs()
         self.gosumemory = Gosumemory()
 
-        irc_data = Config().get_irc_data()
         self.irc = Irc(
-            server=irc_data["IRC_SERVER"],
-            port=int(irc_data["IRC_PORT"]),
-            irc_name=irc_data["IRC_NAME"],
-            irc_pass=irc_data["IRC_PASS"]
+            server=osu_irc_server, 
+            port=osu_irc_port,
+            irc_name=osu_irc_name,
+            irc_pass=osu_irc_pass
         )
+
         super().__init__(token=access_token, prefix=prefix,
                          initial_channels=[] if channels is None else channels)
 
@@ -36,12 +35,12 @@ class Bot(commands.Bot):
     async def event_message(self, message):
         '''Runs every time a new message is received'''
 
-        # self.outputs.print_info(self.osu.is_map_request(message.content))
+        # self.outputs.print_info(is_map_request(message.content))
 
         if message.echo:
             return
         else: 
-            if self.osu.is_map_request(message.content):
+            if is_map_request(message.content):
                 await self.send_map_request(message)
 
         self.outputs.print_message(message.author.name, message.content)
@@ -57,14 +56,20 @@ class Bot(commands.Bot):
     # pylint: disable=invalid-name
 
     async def send_map_request(self, message):
-        osu_url = self.osu.find_osu_url(message.content)
+        '''Handles the map requests'''
         author = message.author.name.capitalize()
         ctx = message.channel
-        
-        await self.irc.privmsg("Gr3g0", f"[{osu_url}] Map request by {author}")
 
         await ctx.send(f"/me Your map is being requested @{author}!")
+
+        osu_url = find_osu_url(message.content)
+        song_name = find_osu_map_name(osu_url)
+
+        # sending the IRC message
+        await self.irc.privmsg("Gr3g0", f"[{osu_url} {song_name}] Requested by {author}")
+
         self.outputs.print_map_request(author, osu_url)
+
 
     @commands.command()
     async def np(self, ctx: commands.Context):
@@ -114,6 +119,4 @@ class Bot(commands.Bot):
         await ctx.send(f"/me Hey @{ctx.author.name}! Currenty usable commands are: !np, !skin, !discord, !twitter")
         self.outputs.print_info("Info command executed!")
 
-    # @routines.routine(seconds=1)
-    # async def social_spam(self, arg: str, ctx: commands.Command):
         
