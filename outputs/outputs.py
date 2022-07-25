@@ -9,27 +9,27 @@ class Outputs():
     def print_message(author: str, message: str) -> None:
         '''prints a chat message to the terminal with colors'''
         print(
-            f"{colors['LIGHT_PURPLE']}{author}: {colors['NOCOLOR']}{message}")
+            f"{colors['LIGHT_PURPLE']}     {author.capitalize()}: {colors['NOCOLOR']}{message}")
 
     @staticmethod
     def print_info(to_be_printed: str) -> None:
         '''prints a info message to the terminal with colors'''
-        print(f"{colors['CYAN']}{to_be_printed}{colors['NOCOLOR']}")
+        print(f"{colors['CYAN']} [I] {to_be_printed}{colors['NOCOLOR']}")
 
     @staticmethod
     def print_error(error: str) -> None:
         '''prints an error message to the terminal with colors'''
-        print(f"{colors['RED']}{error}{colors['NOCOLOR']}")
+        print(f"{colors['RED']} [E] {error}{colors['NOCOLOR']}")
 
     @staticmethod
     def print_warning(warning: str) -> None:
         '''prints an error message to the terminal with colors'''
-        print(f"{colors['YELLOW']}{warning}{colors['NOCOLOR']}")
+        print(f"{colors['YELLOW']} [W] {warning}{colors['NOCOLOR']}")
 
     @staticmethod
     def print_map_request(author: str, message: str) -> None:
         '''prints an osu map request to the terminal with colors'''
-        # TODO
+        print(f"{colors['GREEN']} [M] {author} requested -> {message}")
 
     @staticmethod
     def string_map(metadata: dict) -> str:

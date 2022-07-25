@@ -6,15 +6,28 @@ class Config:
     def __init__(self, filename: str = "config.txt"):
         load_dotenv(filename)
 
+        #TWITCH settings
         self.TMI_TOKEN = environ.get("TMI_TOKEN")
         self.CLIENT_ID = environ.get("CLIENT_ID")
         self.BOT_NICK = environ.get("BOT_NICK")
         self.BOT_PREFIX = environ.get("BOT_PREFIX")
         self.CHANNEL = environ.get("CHANNEL")
+
+        #GOSU settings
         self.GOSUMEMORY_JSON = environ.get("GOSUMEMORY_JSON_URL")
+
+        #IRC settings
+        self.IRC_SERVER = environ.get("IRC_SERVER")
+        self.IRC_PORT = environ.get("IRC_PORT")
+        self.IRC_NAME = environ.get("IRC_NAME")
+        self.IRC_PASS = environ.get("IRC_PASS")
+
+        #MEGA settings
         self.MEGA_EMAIL = environ.get("MEGA_EMAIL")
         self.MEGA_PASSWORD = environ.get("MEGA_PASSWORD")
         self.MEGA_FOLDER = environ.get("MEGA_FOLDER")
+
+        
 
     def get_mega_data(self) -> dict:
         """Returns mega config data."""
@@ -34,6 +47,16 @@ class Config:
             "BOT_NICK": self.BOT_NICK,
             "BOT_PREFIX": self.BOT_PREFIX,
             "CHANNEL": self.CHANNEL,
+        }
+
+    def get_irc_data(self) -> dict:
+        """Returns irc config data."""
+
+        return {
+            "IRC_SERVER": self.IRC_SERVER,
+            "IRC_PORT": self.IRC_PORT,
+            "IRC_NAME": self.IRC_NAME,
+            "IRC_PASS": self.IRC_PASS,
         }
 
     def get_gosumemory_url(self) -> dict:

@@ -2,7 +2,6 @@
 Main program
 """
 import sys
-
 from bot.bot import Bot
 from data.config import Config
 from outputs.outputs import Outputs
