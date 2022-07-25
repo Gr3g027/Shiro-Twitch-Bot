@@ -110,6 +110,7 @@ class Bot(commands.Bot):
     @commands.command()
     async def info(self, ctx: commands.Context):
         '''Info command'''
+        #TODO this is not good
         await ctx.send(f"/me Hey @{ctx.author.name}! Currenty usable commands are: !np, !skin, !discord, !twitter")
         self.outputs.print_info("Info command executed!")
 
