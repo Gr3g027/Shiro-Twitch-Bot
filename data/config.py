@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 
 class Config:
-    def __init__(self, filename: str = "config.txt"):
+    def __init__(self, filename: str = "config.env"):
         load_dotenv(filename)
 
         #TWITCH settings

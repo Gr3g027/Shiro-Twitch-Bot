@@ -42,15 +42,8 @@ class Bot(commands.Bot):
             return
         else: 
             if self.osu.is_map_request(message.content):
-                osu_url = self.osu.find_osu_url(message.content)
-                author = message.author.name.capitalize()
-                ctx = message.channel
+                await self.send_map_request(message)
 
-                await self.irc.send_irc("Gr3g0", f"[{osu_url} Map request by {author}]")
-                await ctx.send(f"/me Your map is being requested @{author}!")
-                self.outputs.print_map_request(author, osu_url)
-                       
-        
         self.outputs.print_message(message.author.name, message.content)
 
         await self.handle_commands(message)
@@ -63,8 +56,15 @@ class Bot(commands.Bot):
 
     # pylint: disable=invalid-name
 
+    async def send_map_request(self, message):
+        osu_url = self.osu.find_osu_url(message.content)
+        author = message.author.name.capitalize()
+        ctx = message.channel
+        
+        await self.irc.privmsg("Gr3g0", f"[{osu_url}] Map request by {author}")
 
-
+        await ctx.send(f"/me Your map is being requested @{author}!")
+        self.outputs.print_map_request(author, osu_url)
 
     @commands.command()
     async def np(self, ctx: commands.Context):
