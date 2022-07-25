@@ -109,9 +109,8 @@ class Bot(commands.Bot):
 
     @commands.command()
     async def info(self, ctx: commands.Context):
-        '''Twitter command'''
+        '''Info command'''
         await ctx.send(f"/me Hey @{ctx.author.name}! Currenty usable commands are: !np, !skin, !discord, !twitter")
-        # await ctx.author.send("!skin, !np, !owo")
         self.outputs.print_info("Info command executed!")
 
     # @routines.routine(seconds=1)
