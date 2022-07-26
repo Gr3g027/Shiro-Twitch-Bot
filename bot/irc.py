@@ -13,8 +13,7 @@ class Irc():
         self.irc_name = irc_name
         self.irc_pass = irc_pass
 
-        self.irc_connect()
-        self.privmsg()
+        self.privmsg(irc_name, "Ready to process requests!")
     
     def irc_connect(self):
         self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,10 +24,13 @@ class Irc():
         self.irc_socket.send(bytes(f"USER {self.irc_name} {self.irc_name} {self.irc_name} :{self.irc_name}\n", "UTF-8"))
         self.irc_socket.send(bytes(f"NICK {self.irc_name}\n", "UTF-8"))
     
+    def irc_disconnect(self):
+        self.irc_socket.close()
+    
     async def privmsg(self, channel, msg):
         self.irc_connect()
         self.irc_socket.send(bytes(f"PRIVMSG {channel} {msg} \n", "UTF-8"))
-        self.irc_socket.close()
+        self.irc_disconnect()
 
     async def response_irc(self):
         res = self.irc_socket.recv(2040).decode("UTF-8")

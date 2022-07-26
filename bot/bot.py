@@ -59,7 +59,7 @@ class Bot(commands.Bot, Irc):
         '''Handles the map requests'''
         author = message.author.name.capitalize()
         ctx = message.channel
--        irc_channel = self.irc.irc_name
+        irc_channel = self.irc.irc_name
 
         await ctx.send(f"/me Your map is being requested @{author}!")
 
