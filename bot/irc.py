@@ -12,6 +12,9 @@ class Irc():
         self.port = port
         self.irc_name = irc_name
         self.irc_pass = irc_pass
+
+        self.irc_connect()
+        self.privmsg()
     
     def irc_connect(self):
         self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
