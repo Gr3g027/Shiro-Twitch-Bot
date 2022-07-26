@@ -59,6 +59,7 @@ class Bot(commands.Bot, Irc):
         '''Handles the map requests'''
         author = message.author.name.capitalize()
         ctx = message.channel
+-        irc_channel = self.irc.irc_name
 
         await ctx.send(f"/me Your map is being requested @{author}!")
 
@@ -66,7 +67,7 @@ class Bot(commands.Bot, Irc):
         song_name = find_osu_map_name(osu_url)
 
         # sending the IRC message
-        await self.irc.privmsg("Gr3g0", f"[{osu_url} {song_name}] Requested by {author}")
+        await self.irc.privmsg(irc_channel, f"[{osu_url} {song_name}] | Requested by {author}")
 
         self.outputs.print_map_request(author, osu_url)
 

@@ -144,5 +144,4 @@ class Gosumemory:
             "mapper": beatmap_metadata["mapper"],
         }
 
-
 gosumemory = Gosumemory()
