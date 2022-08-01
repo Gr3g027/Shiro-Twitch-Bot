@@ -12,8 +12,6 @@ class Irc():
         self.port = port
         self.irc_name = irc_name
         self.irc_pass = irc_pass
-
-        self.privmsg(irc_name, "Ready to process requests!")
     
     def irc_connect(self):
         self.irc_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,18 +21,20 @@ class Irc():
         self.irc_socket.send(bytes(f"PASS {self.irc_pass}\n", "UTF-8"))
         self.irc_socket.send(bytes(f"USER {self.irc_name} {self.irc_name} {self.irc_name} :{self.irc_name}\n", "UTF-8"))
         self.irc_socket.send(bytes(f"NICK {self.irc_name}\n", "UTF-8"))
+
+        self.handle_ping()
     
     def irc_disconnect(self):
         self.irc_socket.close()
     
-    async def privmsg(self, channel, msg):
-        self.irc_connect()
+    def privmsg(self, channel, msg):
         self.irc_socket.send(bytes(f"PRIVMSG {channel} {msg} \n", "UTF-8"))
-        self.irc_disconnect()
 
-    async def response_irc(self):
-        res = self.irc_socket.recv(2040).decode("UTF-8")
-        if res.find('PING') != -1:
-            self.irc_socket.send(bytes(f'PONG {res.split().decode("UTF-8") [1]} \n', "UTF-8"))
-        return res
+    def handle_ping(self):
+        while True:
+            res = self.irc_socket.recv(2040).decode("UTF-8")
+            if res.find('PING') != -1:
+                ping_res = f'PONG {res.split()[1]}'
+                self.irc_socket.send(bytes(f"{ping_res}\n", "UTF-8"))
+                self.outputs.print_info(f"PING REQUEST HANDLED (sent: {ping_res})")
 

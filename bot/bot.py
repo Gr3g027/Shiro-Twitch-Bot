@@ -12,18 +12,12 @@ from data.config import Config
 class Bot(commands.Bot, Irc):
     '''Bot class, handles all the bot logic'''
 
-    def __init__(self, access_token, prefix, channels, osu_irc_server, osu_irc_port, osu_irc_name, osu_irc_pass):
+    def __init__(self, access_token, prefix, channels, osu_irc):
         '''Bot class constructor'''
 
         self.outputs = Outputs()
         self.gosumemory = Gosumemory()
-
-        self.irc = Irc(
-            server=osu_irc_server, 
-            port=osu_irc_port,
-            irc_name=osu_irc_name,
-            irc_pass=osu_irc_pass
-        )
+        self.irc = osu_irc
 
         super().__init__(token=access_token, prefix=prefix,
                          initial_channels=[] if channels is None else channels)
@@ -31,6 +25,7 @@ class Bot(commands.Bot, Irc):
     async def event_ready(self):
         ''' Runs once the bot has established a connection with Twitch. '''
         self.outputs.print_info(f'Logged in as {self.nick}')
+        self.irc.privmsg(self.irc.irc_name, "Ready to process requests!")
 
     async def event_message(self, message):
         '''Runs every time a new message is received'''
@@ -67,7 +62,7 @@ class Bot(commands.Bot, Irc):
         song_name = find_osu_map_name(osu_url)
 
         # sending the IRC message
-        await self.irc.privmsg(irc_channel, f"[{osu_url} {song_name}] | Requested by {author}")
+        self.irc.privmsg(irc_channel, f"[{osu_url} {song_name}] | Requested by {author}")
 
         self.outputs.print_map_request(author, osu_url)
 

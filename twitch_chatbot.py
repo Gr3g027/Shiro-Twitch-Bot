@@ -2,6 +2,8 @@
 Main program
 """
 import sys
+import threading
+from bot.irc import Irc
 from bot.bot import Bot
 from data.config import Config
 from outputs.outputs import Outputs
@@ -21,15 +23,22 @@ if __name__ == "__main__":
     irc_data = config.get_irc_data()
     twitch_data = config.get_twitch_data()
 
+    irc = Irc(
+        server=irc_data["IRC_SERVER"],
+        port=int(irc_data["IRC_PORT"]),
+        irc_name=irc_data["IRC_NAME"],
+        irc_pass=irc_data["IRC_PASS"]
+    )
+
     bot = Bot(
         access_token=twitch_data["TMI_TOKEN"],
         prefix=twitch_data["BOT_PREFIX"],
         channels=[twitch_data["CHANNEL"]],
-
-        osu_irc_server=irc_data["IRC_SERVER"],
-        osu_irc_port=int(irc_data["IRC_PORT"]),
-        osu_irc_name=irc_data["IRC_NAME"],
-        osu_irc_pass=irc_data["IRC_PASS"]
+        osu_irc=irc
     )
-    
-    bot.run()
+    t1 = threading.Thread(target=irc.irc_connect)
+    try:
+        t1.start()
+        bot.run()
+    except KeyboardInterrupt:
+        bot.close()
