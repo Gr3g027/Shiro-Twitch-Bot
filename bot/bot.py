@@ -32,13 +32,13 @@ class Bot(commands.Bot, Irc):
 
         # self.outputs.print_info(is_map_request(message.content))
 
+        self.outputs.print_message(message.author.name, message.content)
+
         if message.echo:
             return
         else: 
             if is_map_request(message.content):
-                await self.send_map_request(message)
-
-        self.outputs.print_message(message.author.name, message.content)
+                await self.send_map_request(message)        
 
         await self.handle_commands(message)
 

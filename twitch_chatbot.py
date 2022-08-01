@@ -10,15 +10,14 @@ from outputs.outputs import Outputs
 
 if __name__ == "__main__":
     config = Config()
+    outputs = Outputs()
 
     if not config.is_config_usable():
-        Outputs().print_error("The config file is missing.")
+        outputs.print_error("The config file is missing.")
         sys.exit(1)
 
     if not config.is_mega_config_valid():
-        Outputs().print_info(
-            "Mega config is missing or invalid."
-        )
+        outputs.print_info("Mega config is missing or invalid.")
 
     irc_data = config.get_irc_data()
     twitch_data = config.get_twitch_data()
@@ -36,9 +35,7 @@ if __name__ == "__main__":
         channels=[twitch_data["CHANNEL"]],
         osu_irc=irc
     )
-    t1 = threading.Thread(target=irc.irc_connect)
-    try:
-        t1.start()
-        bot.run()
-    except KeyboardInterrupt:
-        bot.close()
+
+    threading.Thread(target=irc.irc_connect).start()
+    
+    bot.run()
