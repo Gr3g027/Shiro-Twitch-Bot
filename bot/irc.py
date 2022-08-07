@@ -18,15 +18,9 @@ class Irc():
         self.irc_socket.connect((self.server, self.port))
         self.outputs.print_info(f'Connected to {self.server} IRC server')
 
-        self.irc_socket.send(
-            bytes(
-                f"""
-                PASS {self.irc_pass}\n
-                USER {self.irc_name} {self.irc_name} {self.irc_name} :{self.irc_name}\n
-                NICK {self.irc_name}\n
-                """, "UTF-8"
-            )
-        )
+        self.irc_socket.send(bytes(f"PASS {self.irc_pass}\n", "UTF-8"))
+        self.irc_socket.send(bytes(f"USER {self.irc_name} {self.irc_name} {self.irc_name} :{self.irc_name}\n", "UTF-8"))
+        self.irc_socket.send(bytes(f"NICK {self.irc_name}\n", "UTF-8"))
 
         self.data_handler()
     
@@ -38,7 +32,7 @@ class Irc():
     
     def handle_ping(self, data):
         self.irc_socket.send(bytes(f"PONG {data.split()[1]}\n", "UTF-8"))
-        self.outputs.print_info(f"PING request handled!")
+        # self.outputs.print_info(f"PING request handled!")
     
     def is_ping_req(self, data) -> bool:
         if data.find('PING') != -1:
@@ -46,7 +40,10 @@ class Irc():
 
     def data_handler(self):
         while True:
-            data = self.irc_socket.recv(2040).decode("UTF-8")
-            if self.is_ping_req(data):
-                self.handle_ping(data)
+            try:
+                data = self.irc_socket.recv(2040).decode("UTF-8")
+                if self.is_ping_req(data):
+                    self.handle_ping(data)
+            except KeyboardInterrupt:
+                break
 

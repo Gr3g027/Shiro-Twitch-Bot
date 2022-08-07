@@ -20,6 +20,14 @@ class Gosumemory:
         """Class constructor, loads the config file."""
         self._config = Config()
         self.gosumemory_url = self._config.get_gosumemory_url()
+    
+    def is_connected(self) -> bool:
+        try: 
+            req = requests.get(self.gosumemory_url)
+            if (req.status_code == 200):
+                return True
+        except:
+            return False
 
     def get_gosumemory_data(self) -> dict:
         """
