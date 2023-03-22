@@ -1,15 +1,20 @@
 '''Output handler module'''
 from outputs.colors import colors
+from utils.utils import format_msg
 
 
 class Outputs():
     '''output class, used to display some text in the terminal'''
 
     @staticmethod
-    def print_message(author: str, message: str) -> None:
+    def print_message(message: str, lenght_author = 0,  author = "") -> None:
         '''prints a chat message to the terminal with colors'''
-        print(
-            f"{colors['PURPLE']}     {author.capitalize()}: {colors['NO_COLOR']}{message}")
+        str_autor_len = ' ' * (lenght_author)
+        spaces_new_line = ' ' * (lenght_author + 7)
+        if author:
+            print(f"{colors['PURPLE']}     {author.capitalize()}: {colors['NO_COLOR']}{format_msg(message, spaces_new_line)}")
+        else:
+            print(f"{colors['PURPLE']}     {str_autor_len}-: {colors['NO_COLOR']}{format_msg(message, spaces_new_line)}")
 
     @staticmethod
     def print_info(to_be_printed: str) -> None:
@@ -23,7 +28,7 @@ class Outputs():
 
     @staticmethod
     def print_warning(warning: str) -> None:
-        '''prints an error message to the terminal with colors'''
+        '''prints a warning message to the terminal with colors'''
         print(f"{colors['YELLOW']} [W] {warning}{colors['NO_COLOR']}")
 
     @staticmethod
@@ -35,14 +40,3 @@ class Outputs():
     def print_setup(message: str) -> None:
         '''prints a setup message to the terminal with colors'''
         print(f"{colors['GREEN']} [S] {message}{colors['NO_COLOR']}")
-
-    @staticmethod
-    def string_map(metadata: dict) -> str:
-        '''returns a formatted string for osu maps'''
-        # FIXME should not be here
-        return (
-            f"""/me {metadata['artist']} - {metadata['title']} 
-                [{metadata['diff']}] by {metadata['mapper']} | 
-                Link: {metadata['url']}
-            """
-        )

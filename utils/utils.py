@@ -2,6 +2,7 @@
 Init module for colors and config handler
 """
 
+import subprocess
 import os
 import json
 from zipfile import ZipFile
@@ -119,3 +120,46 @@ def search_json_file(filename: str, key, encoding: str = "utf-8"):
         if value:
             return value
     return None
+
+def process_exists(process_name):
+        call = 'TASKLIST', '/FI', 'imagename eq %s' % process_name
+        # use buildin check_output right away
+        output = subprocess.check_output(call).decode()
+        # check in last line for process name
+        last_line = output.strip().split('\r\n')[-1]
+        # because Fail message could be translated
+        return last_line.lower().startswith(process_name.lower())
+
+def string_map(metadata: dict) -> str:
+    '''returns a formatted string for osu maps'''
+    # FIXME should not be here
+    return (
+        f"""/me {metadata['artist']} - {metadata['title']} 
+            [{metadata['diff']}] by {metadata['mapper']} | 
+            Link: {metadata['url']}
+        """
+    )
+
+def string_pp(ppdata: dict) -> str:
+    '''returns a formatted string for pp info'''
+    return (
+        f"""/me 95% -> {ppdata["95"]}pp |
+            97% -> {ppdata["97"]}pp |
+            98% -> {ppdata["98"]}pp |
+            99% -> {ppdata["99"]}pp |
+            100% -> {ppdata["100"]}pp |
+            Link: {ppdata['url']}
+        """
+    )
+
+def format_msg(msg: str, spaces: str) -> str:
+    '''format a chat message so that it will be displayed in multiple lines'''
+    words = msg.split(" ")
+    words_per_line = 8
+    if (len(words) <= 7): return msg
+    
+    i=0
+    for i in range(i, len(words)):
+        if (i%words_per_line==0 and i!=1 and i!=0): words[i] = (f"{words[i]}\n{spaces}")
+    return ' '.join(words)
+

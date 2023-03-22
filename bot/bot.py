@@ -1,64 +1,95 @@
 '''Bot module'''
+import asyncio
+from asyncio import events
+from pathlib import Path
+from random import randint
+import threading
 from twitchio.ext import commands
 
 # pylint: disable=import-error, no-name-in-module
 from bot.osu_specific import *
 from bot.irc import Irc
 from outputs.outputs import Outputs
-from data.gosumemory import Gosumemory
+from utils.utils import process_exists
 
 class Bot(commands.Bot):
     '''Bot class, handles all the bot logic'''
 
-    def __init__(self, access_token, prefix, channels, osu_irc = Irc, twitter_link = "", discord_link = "", ig_link = "", osu_profile = ""):
+    outputs = Outputs()
+
+    def __init__(self, access_token, client_id, prefix, channels, osu_irc: Irc):
         '''Bot class constructor'''
+        self.osu_irc = osu_irc
+        self.prefix = prefix
 
-        self.outputs = Outputs()
-        self.gosumemory = Gosumemory()
-        self.irc = osu_irc
+        self.msg_count = 0
+        self.old_author = ""
 
-        self.twitter_link = twitter_link
-        self.discord_link = discord_link
-        self.ig_link = ig_link
-        self.osu_profile = osu_profile
-
-        super().__init__(token=access_token, prefix=prefix,
+        self.command_cogs: list[str] = {
+            p.stem for p in Path("./bot/command_cogs").glob("*.py")
+        }
+        
+        super().__init__(token=access_token, client_id=client_id, prefix=prefix,
                          initial_channels=[] if channels is None else channels)
 
+    def run(self):
+        for cog in self.command_cogs:
+            self.load_module(f"bot.command_cogs.{cog}")
+        self.outputs.print_info("All modules added!")
+
+        super().run()
+    
     async def event_ready(self):
         ''' Runs once the bot has established a connection with Twitch. '''
         self.outputs.print_info(f'Logged in as {self.nick}')
-        self.irc.privmsg(self.irc.irc_name, "Ready to process requests!")
+        if (process_exists('osu!.exe')):
+            threading.Thread(target=self.osu_irc.bancho_connect).start()
 
     async def event_message(self, message):
         '''Runs every time a new message is received'''
 
-        # self.outputs.print_info(is_map_request(message.content))
-
         if message.echo:
             return
         else:
-            self.outputs.print_message(message.author.name, message.content)
+            self.msg_count += 1
+
+            if self.old_author == message.author.name:
+                self.outputs.print_message(message.content, lenght_author=len(message.author.name)-1)
+            else:
+                self.outputs.print_message(message.content, author=message.author.name, lenght_author=len(message.author.name)-1)
 
             if is_map_request(message.content):
                 await self.send_map_request(message)
+            elif message.content.count(self.prefix) == 1 and len(message.content) > 1:
+                await self.handle_commands(message)
+            elif self.msg_count%100 == 0:
+                await self.cogs.get("Social").send_socials(message)
+            
+            self.old_author = message.author.name
 
-        await self.handle_commands(message)
+    async def event_command_error(self, context, error = "") -> None:
+        try:
+            cmd_group = context.command.cog.name
+            cmd_name = context.command.name
 
-    async def event_command_error(self, context, error):
-        '''Runs for every error, command related'''
-        self.outputs.print_error(error)
-        await context.send(f"/me {error}")
+            if (cmd_group == "Social"):
+                self.outputs.print_warning(f"No link provided for {cmd_name}")
+                await context.send(f"/me No {cmd_name} here :p!")
+
+            if (error != ""): self.outputs.print_error(error)
+            await context.send(f"/me Sorry, some error occured! {cmd_name} command didn't work!")
+        except Exception as ex:
+            self.outputs.print_error(ex)
+            if (ex == "'NoneType' object has no attribute 'cog'") : 
+                self.outputs.print_error("The command does not exist!")
         # return await super().event_command_error(context, error)
 
     # pylint: disable=invalid-name
-
-    # async def event_join(self, channel, user):
-    #     '''Runs every time a user joins the channel'''
-    #     print(user.fetch_tags())
-    #     if user.name != self.nick:
-    #         self.outputs.print_info(f"USER JOINED: {user.name}")
-    #     # await channel.send(f"/me You're welcome @{user}!")
+       
+    async def command_output_handler(self, ctx: commands.Context):
+        '''Handles the terminal outputs, command related'''
+        cmd_name = ctx.command.name
+        Outputs.print_info(f"{cmd_name} command executed!")
 
     async def send_map_request(self, message):
         '''Handles the map requests'''
@@ -68,100 +99,22 @@ class Bot(commands.Bot):
         author = message.author.name.capitalize()
         ctx = message.channel
 
-        if not song_name:
+        if not process_exists('osu!.exe'):
+            await ctx.send(f"/me Mmh?! not playing osu right now!")
+            self.outputs.print_warning("Osu is not running")
+            return 
+
+        elif not song_name or not osu_url:
             await ctx.send(f"/me The link you sent is not valid @{author}! :(")
+            self.outputs.print_warning("The link sent wasn't found")
             return
 
-        else:
-            irc_channel = self.irc.irc_name
-
-            await ctx.send(f"/me Your map is being requested @{author}! :)")
-
-            # sending the IRC message
-            self.irc.privmsg(irc_channel, f"[{osu_url} {song_name}] | Requested by {author}")
-
-            self.outputs.print_map_request(author, osu_url)
-
-
-    @commands.command(name="np", aliases=["now playing", "nowp"])
-    async def np(self, ctx: commands.Context):
-        '''Now playing command'''
-        if self.gosumemory.is_connected():
-            metadata = self.gosumemory.get_map()
-            await ctx.send(f'{self.outputs.string_map(metadata=metadata)}')
-            self.outputs.print_info("Now Playing command executed!")
-        else:
-            Outputs.print_error("Could not connect to gosumemory socket!")
-            await ctx.send("/me Could not connect to gosumemory, sorry!")
-
-    @commands.command(name="skin", aliases=["osuskin"])
-    async def skin(self, ctx: commands.Context):
-        '''Skin command'''
-        if self.gosumemory.is_connected():
-            skin = self.gosumemory.get_skin()
-            Outputs.print_info("The skin is already on mega!")
-            await ctx.send(f"{skin['skin']} {skin['url']}")
-            Outputs.print_info("Skin command executed!")
-        else:
-            Outputs.print_error("Could not connect to gosumemory socket!")
-            await ctx.send("/me Could not connect to gosumemory, sorry!")
-
-    @commands.command()
-    async def owo(self, ctx: commands.Context):
-        '''OwO command'''
-        await ctx.send(f"/me OωO @{ctx.author.name}")
-        self.outputs.print_info("OwO command executed!")
-
-    @commands.command(name="discord", aliases=["ds"])
-    async def discord(self, ctx: commands.Context):
-        '''Discord command'''
-        if self.discord_link:
-            await ctx.send(f"/me My server! -> {self.discord_link} @{ctx.author.name}")
-            self.outputs.print_info("Discord command executed!")
-        else:
-            await self.event_command_error(ctx, "No discord found!")
-    
-    @commands.command(name="twitter")
-    async def twitter(self, ctx: commands.Context):
-        '''Twitter command'''
-        if self.twitter_link:
-            await ctx.send(f"/me Follow me! -> {self.twitter_link} @{ctx.author.name}")
-            self.outputs.print_info("Twitter command executed!")
-        else: 
-            await self.event_command_error(ctx, "No twitter found!")
-
-    @commands.command(name="instagram", aliases=["ig"])
-    async def instagram(self, ctx: commands.Context):
-        '''Twitter command'''
-        if self.ig_link:
-            await ctx.send(f"/me Follow me! -> {self.ig_link} @{ctx.author.name}")
-            self.outputs.print_info("Instagram command executed!")
-        else:
-            await self.event_command_error(ctx, "No instagram found!")
-    
-    @commands.command(name="osuprofile", aliases=["osup", "osu", "profile"])
-    async def osuprofile(self, ctx: commands.Context):
-        '''Osu-profile command'''
-        if self.osu_profile:
-            await ctx.send(f"/me Check my osu profile! -> {self.osu_profile} @{ctx.author.name}")
-            self.outputs.print_info("Osu-profile command executed!")
-        else:
-            await self.event_command_error(ctx, "No osu profile found!")
-
-    @commands.command(name="info", aliases=["i", "commands", "cmds"])
-    async def info(self, ctx: commands.Context):
-        '''Info command'''
-        #TODO this is not good
-
-        msg = f"/me Hey @{ctx.author.name}! Currenty usable commands are:"
-
-        commands = sorted(self.commands, reverse=True)
-
-        for command in commands:
-            if command == list(commands)[-1]:
-                msg += f" !{command}."
-            else: 
-                msg += f" !{command}, "
-        await ctx.send(msg)
-        self.outputs.print_info("Info command executed!")
+        elif not self.osu_irc.is_connected():
+            threading.Thread(target=self.osu_irc.bancho_connect).start()
+            await asyncio.sleep(3)
         
+        irc_channel = self.osu_irc.name
+        await ctx.send(f"/me Your map is being requested @{author}! RainbowPls")
+        self.osu_irc.privmsg(irc_channel, f"[{osu_url} {song_name}] | Requested by {author}")
+        self.outputs.print_map_request(author, osu_url)
+            

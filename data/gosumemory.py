@@ -134,7 +134,7 @@ class Gosumemory:
 
         return {"skin": skin_name, "url": skin_url}
 
-    def get_map(self) -> dict:
+    def get_map_data(self) -> dict:
         """Gets data from gosumemory, returns current beatmap informations."""
 
         api_data = self.get_gosumemory_data()
@@ -143,13 +143,20 @@ class Gosumemory:
 
         # creating download link
 
-        beatmap_metadata = api_data["menu"]["bm"]["metadata"]
+        bm_metadata = api_data["menu"]["bm"]["metadata"]
+        bm_pp_data = api_data["menu"]["pp"]
+
         return {
             "url": f"https://osu.ppy.sh/b/{api_data['menu']['bm']['id']}",
-            "title": beatmap_metadata["title"],
-            "artist": beatmap_metadata["artist"],
-            "diff": beatmap_metadata["difficulty"],
-            "mapper": beatmap_metadata["mapper"],
+            "title": bm_metadata["title"],
+            "artist": bm_metadata["artist"],
+            "diff": bm_metadata["difficulty"],
+            "mapper": bm_metadata["mapper"],
+            "95": bm_pp_data["95"],
+            "97": bm_pp_data["97"],
+            "98": bm_pp_data["98"],
+            "99": bm_pp_data["99"],
+            "100": bm_pp_data["100"],
         }
 
 gosumemory = Gosumemory()
